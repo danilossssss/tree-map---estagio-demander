@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+ 
+ <header>
+  <title>Tree Map</title>
+  <h1>Tree Map</h1>
+
+
+ </header>
+ 
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/reset.css">
+  <link rel="stylesheet" href="./css/header.css">
+  <link rel="stylesheet" href="./css/footer.css">
+  <!-- FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    /* Estilos do Contêiner do Treemap */
+    #treemap-container {
+      position: relative;
+      width: 300px;
+      height: 500px;
+      border: 20px solid #4716b232;
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+    /* Estilos dos Nós do Treemap */
+    .treemap-node {
+      box-sizing: border-box;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid rgba(7, 1, 32, 0.442);
+    }
+
+
+
+   /* Estilos do Fundo de Partículas*/
+   #particles-js{
+       background: rgb(22, 2, 54);
+       position: fixed;
+       width: 100%;
+       height: 100%;
+       top: 0;
+       z-index: -1;
+
+    
+   }
+
+       /* Estilos do formulário para centralizar */
+       #form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #input-values,
+    button {
+      margin: 10px 0;
+    }
+</style>
+
+  </style>
+</head>
+<body>
+  <!-- Entrada de Valores para o Treemap -->
+  <div id="form-container">
+    <label for="input-values">Insira valores separados por vírgula:</label>
+    <input type="text" id="input-values" placeholder="Ex: 10,20,30,40">
+    <button onclick="generateTreemap()">Gerar Treemap</button>
+  </div>
+  <!-- Contêiner do Treemap -->
+  <div id="treemap-container"></div>
+ <!-- Script JavaScript para Gerar o Treemap -->
+ <script>
+  // Classe que representa o gerador de Treemap usando orientação a objetos.
+    class TreemapGenerator {
+      constructor(containerId) {
+        // Inicializa a instância com um contêiner DOM
+        this.container = document.getElementById(containerId);
+      }
+// Método para gerar o Treemap com base nos valores de entrada
+      generateTreemap(inputValues) {
+       
+       
+       
+        const valuesArray = inputValues.split(',').map(value => +value);
+
+        const totalWidth = 300;
+        const totalHeight = 500;
+
+        const sumValues = valuesArray.reduce((sum, value) => sum + value, 0);
+
+        const normalizedValues = valuesArray.map(value => (value / sumValues) * 100);
+
+        this.container.innerHTML = '';
+
+        normalizedValues.forEach((value, index) => {
+          const treemapNode = document.createElement('div');
+          treemapNode.className = 'treemap-node';
+
+          const height = (value / 100) * totalHeight;
+          treemapNode.style.height = `${height}px`;
+          treemapNode.style.width = '100%';
+
+          let color;
+          if (valuesArray[index] > 20) {
+            color = 'steelblue';
+          } else if (valuesArray[index] > 10) {
+            color = 'skyblue';
+          } else {
+            color = 'lightblue';
+          }
+
+          treemapNode.style.backgroundColor = color;
+
+          const valueText = value.toFixed(2);
+          const originalValue = valuesArray[index];
+          treemapNode.innerText = `${originalValue} (${valueText}%)`;
+
+          this.container.appendChild(treemapNode);
+        });
+      }
+    }
+// Função que é chamada no botão click para gerar o Treemap
+    function generateTreemap() {
+      const inputValues = document.getElementById('input-values').value;
+      const treemapGenerator = new TreemapGenerator('treemap-container');
+      treemapGenerator.generateTreemap(inputValues);
+    }
+  </script>
+<!-- Rodapé da Página -->
+<footer>
+  <span>
+      Projeto de processo seletivo -  &copy; Danilo Medeiros, 2023, Todos os direitos reservados.
+  </span>
+</footer>
+
+
+<div id="particles-js"></div>
+
+<script src="particles.min.js"></script>
+<script>particlesJS({
+  "particles": {
+    "number": {
+      "value": 133,
+      "density": {
+        "enable": true,
+        "value_area": 800
+      }
+    },
+    "color": {
+      "value": "#fff"
+    },
+    "shape": {
+      "type": "circle",
+      "stroke": {
+        "width": 0,
+        "color": "#000000"
+      },
+      "polygon": {
+        "nb_sides": 4
+      },
+      "image": {
+        "src": "img/github.svg",
+        "width": 100,
+        "height": 100
+      }
+    },
+    "opacity": {
+      "value": 0.5,
+      "random": true,
+      "anim": {
+        "enable": false,
+        "speed": 1,
+        "opacity_min": 0.1,
+        "sync": false
+      }
+    },
+    "size": {
+      "value": 10,
+      "random": true,
+      "anim": {
+        "enable": false,
+        "speed": 40,
+        "size_min": 0.1,
+        "sync": false
+      }
+    },
+    "line_linked": {
+      "enable": false,
+      "distance": 500,
+      "color": "#ffffff",
+      "opacity": 0.4,
+      "width": 2
+    },
+    "move": {
+      "enable": true,
+      "speed": 6,
+      "direction": "bottom",
+      "random": false,
+      "straight": false,
+      "out_mode": "out",
+      "bounce": false,
+      "attract": {
+        "enable": false,
+        "rotateX": 600,
+        "rotateY": 1200
+      }
+    }
+  },
+  "interactivity": {
+    "detect_on": "canvas",
+    "events": {
+      "onhover": {
+        "enable": true,
+        "mode": "bubble"
+      },
+      "onclick": {
+        "enable": true,
+        "mode": "repulse"
+      },
+      "resize": true
+    },
+    "modes": {
+      "grab": {
+        "distance": 400,
+        "line_linked": {
+          "opacity": 0.5
+        }
+      },
+      "bubble": {
+        "distance": 400,
+        "size": 4,
+        "duration": 0.3,
+        "opacity": 1,
+        "speed": 3
+      },
+      "repulse": {
+        "distance": 200,
+        "duration": 0.4
+      },
+      "push": {
+        "particles_nb": 4
+      },
+      "remove": {
+        "particles_nb": 2
+      }
+    }
+  },
+  "retina_detect": true
+})</script>
+
+
+
+</body>
+</html>
