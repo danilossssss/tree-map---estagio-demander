@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Cabeçalho da Página -->
+  <header>
+    <title>Tree Map</title>
+    <h1>Tree Map</h1>
+  </header>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/reset.css">
+  <link rel="stylesheet" href="./css/header.css">
+  <link rel="stylesheet" href="./css/footer.css">
+  <!-- FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --verde-claro: rgba(119, 243, 154, 0.519);
+      --verde-medio: rgba(7, 152, 60, 0.578);
+      --verde-escuro: rgba(3, 61, 25, 0.67);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Estilos do Contêiner do Mapa de Árvore */
+    #mapa-arvore-container {
+      position: relative;
+      width: 300px;
+      height: 500px;
+      border: 20px solid #16b24f13;
+      background-color: #16b24f32;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      align-content: flex-start;
+      margin-top: 20px;
+    }
+
+    /* Estilos dos Nós do Mapa de Árvore */
+    .mapa-arvore-no {
+      box-sizing: border-box;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid rgba(7, 1, 32, 0.442);
+      flex: 0 0 33.33%; /* Divide em 3 colunas */
+      margin: 0; /* Remove margens */
+    }
+
+    /* Estilos do Fundo de Partículas*/
+    #particles-js {
+      background: rgb(22, 2, 54);
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      z-index: -1;
+    }
+
+    /* Estilos do formulário para centralizar */
+    #form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #input-values,
+    button {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Formulário para inserir valores e gerar o Mapa de Árvore -->
+  <div id="form-container">
+    <!-- Rótulo para o campo de entrada -->
+    <label for="input-values">Insira valores separados por vírgula:</label>
+    <!-- Campo de entrada para os valores -->
+    <input type="text" id="input-values" placeholder="Ex: 10,20,30,40">
+    <!-- Botão que chama a função para gerar o Mapa de Árvore -->
+    <button onclick="geradorDeMapa()">Gerar Tree Map</button>
+  </div>
+
+  <!-- Contêiner do Mapa de Árvore -->
+  <div id="mapa-arvore-container"></div>
+
+  <script>
+    // Função para gerar o Mapa de Árvore com base nos valores de entrada
+    function geradorDeMapa() {
+      // Obtém os valores do campo de entrada
+      const inputValues = document.getElementById('input-values').value;
+      // Cria uma instância do gerador de Mapa de Árvore, passando o ID do contêiner
+      const mapaArvoreGenerator = new MapaArvoreGenerator('mapa-arvore-container');
+      // Chama o método para gerar o Mapa de Árvore com os valores de entrada
+      mapaArvoreGenerator.geradorDeMapa(inputValues);
+    }
+
+    // Classe que representa o gerador de Mapa de Árvore usando orientação a objetos.
+    class MapaArvoreGenerator {
+      // Construtor da classe, recebe o ID do contêiner do Mapa de Árvore
+      constructor(containerId) {
+        // Obtém o contêiner do Mapa de Árvore usando o ID
+        this.container = document.getElementById(containerId);
+      }
+
+      // Método para gerar o Mapa de Árvore com base nos valores de entrada
+      geradorDeMapa(inputValues) {
+        // Converte os valores de entrada em um array
+        const valuesArray = inputValues.split(',').map(value => +value);
+
+        // Ordena os valores de forma decrescente
+        const valoresOrdenados = valuesArray.sort((a, b) => b - a);
+
+        // Largura e altura totais do Mapa de Árvore
+        const larguraTotal = 300;
+        const alturaTotal = 500;
+
+        // Calcula a soma dos valores
+        const somaDosValores = valoresOrdenados.reduce((soma, valor) => soma + valor, 0);
+
+        // Normaliza os valores para representar a porcentagem de cada valor
+        const valoresNormalizados = valoresOrdenados.map(valor => (valor / somaDosValores) * 100);
+
+        // Limpa o conteúdo do contêiner do Mapa de Árvore
+        this.container.innerHTML = '';
+
+        // Para cada valor normalizado, cria um nó no Mapa de Árvore
+        valoresNormalizados.forEach((valor, indice) => {
+          // Cria um elemento div para representar um nó do Mapa de Árvore
+          const mapaArvoreNo = document.createElement('div');
+          // Adiciona uma classe ao nó para estilização
+          mapaArvoreNo.className = 'mapa-arvore-no';
+
+          // Calcula a altura do nó proporcional ao valor normalizado
+          const altura = (valor / 100) * alturaTotal;
+          // Define a altura e largura do nó
+          mapaArvoreNo.style.height = `${altura}px`;
+          mapaArvoreNo.style.width = '100%';
+
+          // Define a cor do fundo do nó do Mapa de Árvore com base em alguma variável "color"
+          let cor;
+
+          if (valoresOrdenados[indice] < 40) {
+            // Verde claro para valores menores que 40
+            cor = 'var(--verde-claro)';
+          } else if (valoresOrdenados[indice] < 80) {
+            // Verde mais escuro para valores entre 40 e 80
+            cor = 'var(--verde-medio)';
+          } else {
+            // Verde escuro para valores maiores que 80
+            cor = 'var(--verde-escuro)';
+          }
+
+          // Define a cor de fundo do nó do Mapa de Árvore com base em alguma variável "color"
+          mapaArvoreNo.style.backgroundColor = cor;
+
+          // Formata o valor para ter duas casas decimais e o armazena em "valueText"
+          const textoDoValor = valor.toFixed(2);
+
+          // Obtém o valor original da posição correspondente no array ordenado
+          const valorOriginal = valoresOrdenados[indice];
+
+          // Define o conteúdo de texto do nó do Mapa de Árvore com o valor original e o valor formatado
+          mapaArvoreNo.innerText = `${valorOriginal} (${textoDoValor}%)`;
+
+          // Adiciona o nó do Mapa de Árvore ao contêiner do Mapa de Árvore
+          this.container.appendChild(mapaArvoreNo);
+        });
+      }
+    }
+  </script>
+
+  <!-- Rodapé da Página -->
+  <footer>
+    <span>
+      Projeto de processo seletivo -  &copy; Danilo Medeiros, 2023, Todos os direitos reservados.
+    </span>
+  </footer>
+
+   <!-- Animação visual de fundo -->
+  <div id="particles-js"></div>
+  <script src="particles.min.js"></script>
+  <script>
+    particlesJS({
+      "particles": {
+        "number": {
+          "value": 133,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#fff"
+        },
+        "shape": {
+          "type": "circle",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+          "polygon": {
+            "nb_sides": 4
+          },
+          "image": {
+            "src": "img/github.svg",
+            "width": 100,
+            "height": 100
+          }
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 1,
+            "opacity_min": 0.1,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 10,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 40,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": false,
+          "distance": 500,
+          "color": "#ffffff",
+          "opacity": 0.4,
+          "width": 2
+        },
+        "move": {
+          "enable": true,
+          "speed": 6,
+          "direction": "bottom",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+          "attract": {
+            "enable": false,
+            "rotateX": 600,
+            "rotateY": 1200
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "bubble"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 400,
+            "line_linked": {
+              "opacity": 0.5
+            }
+          },
+          "bubble": {
+            "distance": 400,
+            "size": 4,
+            "duration": 0.3,
+            "opacity": 1,
+            "speed": 3
+          },
+          "repulse": {
+            "distance": 200,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 4
+          },
+          "remove": {
+            "particles_nb": 2
+          }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+</body>
+</html>
